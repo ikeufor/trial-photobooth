@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sixteen years with infinite: frame your memories</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-wrapper">
+
+        <header class="hero">
+            <div class="hero-badge">✦ 2010 — 2026 ✦</div>
+            <h1>
+                <span class="title-line">sixteen years</span>
+                <span class="title-with">with</span>
+                <span class="title-infinite">INFINITE ∞</span>
+            </h1>
+            <p class="tagline">❤︎⁠ frame your memories ❤︎⁠</p>
+        </header>
+
+        <main class="main-card">
+            <p class="description">
+                Upload four of your favourite photos and get a custom photo strip to keep forever.
+                Landscape photos in 4:3 ratio fit perfectly! ♡
+                <br><br>
+                <strong>How it works:</strong> Upload → Generate Strip → Download (if you want)
+            </p>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+                <span class="upload-label">Choose 4 photos</span>
+                <span class="upload-hint">tap to browse</span>
+                <input type="file" id="photoInput" accept="image/*" multiple>
+            </div>
+
+            <div id="fileStatus" class="file-status"></div>
+
+            <div class="button-group">
+                <button id="generateBtn" class="btn btn-primary">
+                    <span>Generate Strip</span>
+                </button>
+                <button id="downloadBtn" class="btn btn-secondary">
+                    <span>Download</span>
+                </button>
+            </div>
+
+            <p class="privacy-note">
+                🔒 Your photos are never uploaded or stored, everything happens on your device! Made by @sooyeoling for INFINITE's 16th anniversary ♡
+            </p>
+        </main>
+
+        <section class="canvas-section">
+            <canvas id="canvas"></canvas>
+        </section>
+
+    </div>
+    <script src="script.js"></script>
+    <script>
+        // Show selected file count
+        document.getElementById('photoInput').addEventListener('change', function() {
+            const count = this.files.length;
+            const status = document.getElementById('fileStatus');
+            const label = document.querySelector('.upload-label');
+            if (count > 0) {
+                label.textContent = count + ' photo' + (count !== 1 ? 's' : '') + ' selected';
+                document.querySelector('.upload-area').classList.add('has-files');
+            }
+        });
+
+    </script>
+</body>
+</html>

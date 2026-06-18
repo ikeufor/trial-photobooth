@@ -1,20 +1,29 @@
-const uploadInput = document.getElementById("upload")
+const uploadInput =
+  document.getElementById("upload")
 
-const cameraMode = document.getElementById("cameraMode")
+const cameraMode =
+  document.getElementById("cameraMode")
 
-const startCameraBtn = document.getElementById("startCamera")
+const startCameraBtn =
+  document.getElementById("startCamera")
 
-const takePhotoBtn = document.getElementById("takePhoto")
+const takePhotoBtn =
+  document.getElementById("takePhoto")
 
-const downloadBtn = document.getElementById("download")
+const downloadBtn =
+  document.getElementById("download")
 
-const video = document.getElementById("video")
+const video =
+  document.getElementById("video")
 
-const canvas = document.getElementById("canvas")
-const ctx = canvas.getContext("2d")
+const canvas =
+  document.getElementById("canvas")
+
+const ctx =
+  canvas.getContext("2d")
 
 // =========================
-// FRAME SIZE
+// CANVAS SIZE
 // =========================
 
 canvas.width = 757
@@ -35,6 +44,7 @@ const PHOTO_HEIGHT = 873
 // =========================
 
 const frame = new Image()
+
 frame.src = "frame.png"
 
 frame.onload = () => {
@@ -51,35 +61,48 @@ async function startCamera() {
 
   try {
 
-    // stop stream lama
+    // stop previous stream
     if (stream) {
-      stream.getTracks().forEach(track => track.stop())
+      stream.getTracks().forEach(track => {
+        track.stop()
+      })
     }
 
-    const facingMode = cameraMode.value
+    const facingMode =
+      cameraMode.value
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: {
-          ideal: facingMode
-        }
-      },
-      audio: false
-    })
+    stream =
+      await navigator.mediaDevices
+        .getUserMedia({
+
+          video: {
+            facingMode: {
+              ideal: facingMode
+            }
+          },
+
+          audio: false
+        })
 
     video.srcObject = stream
 
     video.style.display = "block"
 
-    // FRONT CAMERA = MIRROR
+    // FRONT CAMERA MIRROR
     if (facingMode === "user") {
+
       video.classList.add("mirror")
+
     } else {
+
       video.classList.remove("mirror")
     }
 
   } catch (err) {
+
     console.error(err)
+
+    alert("Camera access failed.")
   }
 }
 
@@ -94,7 +117,12 @@ startCameraBtn.addEventListener(
 
 function drawEmpty() {
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  )
 
   ctx.drawImage(
     frame,
@@ -106,14 +134,19 @@ function drawEmpty() {
 }
 
 // =========================
-// DRAW IMAGE COVER
+// DRAW IMAGE
 // =========================
 
 function drawCoverImage(img) {
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  )
 
-  // clipping area
+  // CLIP AREA
   ctx.save()
 
   ctx.beginPath()
@@ -130,21 +163,37 @@ function drawCoverImage(img) {
   const imageWidth = img.width
   const imageHeight = img.height
 
-  // COVER ALGORITHM
+  // COVER SCALE
   const scale = Math.max(
     PHOTO_WIDTH / imageWidth,
     PHOTO_HEIGHT / imageHeight
   )
 
-  const drawWidth = imageWidth * scale
-  const drawHeight = imageHeight * scale
+  const drawWidth =
+    imageWidth * scale
 
-  // CENTER
+  const drawHeight =
+    imageHeight * scale
+
+  // CENTER IMAGE
   const drawX =
-    PHOTO_X + (PHOTO_WIDTH - drawWidth) / 2
+    PHOTO_X +
+    (PHOTO_WIDTH - drawWidth) / 2
 
   const drawY =
-    PHOTO_Y + (PHOTO_HEIGHT - drawHeight) / 2
+    PHOTO_Y +
+    (PHOTO_HEIGHT - drawHeight) / 2
+
+  // =========================
+  // RICOH GRII STYLE FILTER
+  // =========================
+
+  ctx.filter = `
+    brightness(1.03)
+    contrast(0.9)
+    saturate(0.9)
+    sepia(0.1)
+  `
 
   ctx.drawImage(
     img,
@@ -154,9 +203,14 @@ function drawCoverImage(img) {
     drawHeight
   )
 
+  ctx.filter = "none"
+
   ctx.restore()
 
-  // FRAME DI ATAS
+  // =========================
+  // FRAME OVERLAY
+  // =========================
+
   ctx.drawImage(
     frame,
     0,
@@ -170,97 +224,117 @@ function drawCoverImage(img) {
 // UPLOAD IMAGE
 // =========================
 
-uploadInput.addEventListener("change", e => {
+uploadInput.addEventListener(
+  "change",
+  e => {
 
-  const file = e.target.files[0]
+    const file =
+      e.target.files[0]
 
-  if (!file) return
+    if (!file) return
 
-  const reader = new FileReader()
+    const reader =
+      new FileReader()
 
-  reader.onload = () => {
+    reader.onload = () => {
 
-    const img = new Image()
+      const img = new Image()
 
-    img.onload = () => {
-      drawCoverImage(img)
+      img.onload = () => {
+        drawCoverImage(img)
+      }
+
+      img.src = reader.result
     }
 
-    img.src = reader.result
+    reader.readAsDataURL(file)
   }
-
-  reader.readAsDataURL(file)
-})
+)
 
 // =========================
-// CAPTURE CAMERA
+// CAPTURE PHOTO
 // =========================
 
-takePhotoBtn.addEventListener("click", () => {
+takePhotoBtn.addEventListener(
+  "click",
+  () => {
 
-  if (!stream) return
+    if (!stream) return
 
-  const tempCanvas =
-    document.createElement("canvas")
+    const tempCanvas =
+      document.createElement("canvas")
 
-  const tempCtx =
-    tempCanvas.getContext("2d")
+    const tempCtx =
+      tempCanvas.getContext("2d")
 
-  tempCanvas.width = video.videoWidth
-  tempCanvas.height = video.videoHeight
+    tempCanvas.width =
+      video.videoWidth
 
-  const isFrontCamera =
-    cameraMode.value === "user"
+    tempCanvas.height =
+      video.videoHeight
 
-  // kalau front camera
-  // hasil ikut mirror
+    const isFrontCamera =
+      cameraMode.value === "user"
 
-  if (isFrontCamera) {
+    // MIRROR FRONT CAMERA
+    if (isFrontCamera) {
 
-    tempCtx.translate(
+      tempCtx.translate(
+        tempCanvas.width,
+        0
+      )
+
+      tempCtx.scale(-1, 1)
+    }
+
+    tempCtx.drawImage(
+      video,
+      0,
+      0,
       tempCanvas.width,
-      0
+      tempCanvas.height
     )
 
-    tempCtx.scale(-1, 1)
+    const capturedImage =
+      new Image()
+
+    capturedImage.onload = () => {
+      drawCoverImage(capturedImage)
+    }
+
+    capturedImage.src =
+      tempCanvas.toDataURL(
+        "image/png"
+      )
+
+    // STOP CAMERA
+    stream.getTracks().forEach(
+      track => track.stop()
+    )
+
+    video.style.display = "none"
   }
-
-  tempCtx.drawImage(
-    video,
-    0,
-    0,
-    tempCanvas.width,
-    tempCanvas.height
-  )
-
-  const img = new Image()
-
-  img.onload = () => {
-    drawCoverImage(img)
-  }
-
-  img.src =
-    tempCanvas.toDataURL("image/png")
-
-  // stop camera
-  stream.getTracks().forEach(track => track.stop())
-
-  video.style.display = "none"
-})
+)
 
 // =========================
 // DOWNLOAD
 // =========================
 
-downloadBtn.addEventListener("click", () => {
+downloadBtn.addEventListener(
+  "click",
+  () => {
 
-  const link =
-    document.createElement("a")
+    const link =
+      document.createElement("a")
 
-  link.download = "photobox.png"
+    link.download =
+      "photobox.png"
 
-  link.href =
-    canvas.toDataURL("image/png")
+    link.href =
+      canvas.toDataURL(
+        "image/png"
+      )
 
-  link.click()
-})
+    link.click()
+  }
+)

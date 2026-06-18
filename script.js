@@ -1,322 +1,212 @@
-const uploadInput =
-  document.getElementById("upload")
-
-const cameraMode =
-  document.getElementById("cameraMode")
-
-const startCameraBtn =
-  document.getElementById("startCamera")
-
-const takePhotoBtn =
-  document.getElementById("takePhoto")
-
-const downloadBtn =
-  document.getElementById("download")
-
-const video =
-  document.getElementById("video")
-
-const canvas =
-  document.getElementById("canvas")
-
-const ctx =
-  canvas.getContext("2d")
+const uploadInput   = document.getElementById("upload")
+const cameraMode    = document.getElementById("cameraMode")
+const startCameraBtn = document.getElementById("startCamera")
+const takePhotoBtn  = document.getElementById("takePhoto")
+const downloadBtn   = document.getElementById("download")
+const video         = document.getElementById("video")
+const canvas        = document.getElementById("canvas")
+const placeholder   = document.getElementById("placeholder")
+const ctx           = canvas.getContext("2d")
 
 // =========================
-// CANVAS SIZE
+// CANVAS SIZE (matches frame.png dimensions)
 // =========================
 
-canvas.width = 757
+canvas.width  = 757
 canvas.height = 1177
 
 // =========================
-// PHOTO AREA
+// PHOTO AREA inside the frame (in canvas pixels)
+// Matches the CSS .photo-area percentages × canvas size
 // =========================
 
-const PHOTO_X = 16
-const PHOTO_Y = 102
-
-const PHOTO_WIDTH = 725
-const PHOTO_HEIGHT = 873
+const PHOTO_X      = 16    // 2.11% × 757
+const PHOTO_Y      = 102   // 8.67% × 1177
+const PHOTO_WIDTH  = 725   // 95.77% × 757
+const PHOTO_HEIGHT = 873   // 74.13% × 1177
 
 // =========================
-// FRAME
+// FRAME IMAGE
 // =========================
 
 const frame = new Image()
-
 frame.src = "frame.png"
+
+// =========================
+// STATE
+// =========================
+
+let stream      = null
+let hasContent  = false   // true once a photo has been captured/uploaded
+
+function setHasContent(val) {
+  hasContent = val
+  // canvas visible only when there's content
+  canvas.style.display    = val ? "block"  : "none"
+  placeholder.style.display = val ? "none" : "flex"
+  downloadBtn.disabled    = !val
+}
+
+function setStreamActive(val) {
+  takePhotoBtn.disabled = !val
+  // hide canvas when live camera starts; show placeholder instead
+  if (val) setHasContent(false)
+}
 
 // =========================
 // CAMERA
 // =========================
 
-let stream = null
-
 async function startCamera() {
-
   try {
-
     // stop previous stream
     if (stream) {
-
-      stream
-        .getTracks()
-        .forEach(track => track.stop())
+      stream.getTracks().forEach(t => t.stop())
     }
 
-    const facingMode =
-      cameraMode.value
+    const facing = cameraMode.value
 
-    stream =
-      await navigator
-        .mediaDevices
-        .getUserMedia({
-
-          video: {
-            facingMode: {
-              ideal: facingMode
-            }
-          },
-
-          audio: false
-        })
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: facing } },
+      audio: false
+    })
 
     video.srcObject = stream
+    video.style.display = "block"
 
-    // FRONT CAMERA MIRROR
-    if (facingMode === "user") {
+    video.classList.toggle("mirror", facing === "user")
 
-      video.classList.add("mirror")
-
-    } else {
-
-      video.classList.remove("mirror")
-    }
+    setStreamActive(true)
 
   } catch (err) {
-
     console.error(err)
-
-    alert("Cannot access camera")
+    alert("Tidak bisa mengakses kamera. Pastikan izin kamera sudah diberikan.")
   }
 }
 
-startCameraBtn.addEventListener(
-  "click",
-  startCamera
-)
+startCameraBtn.addEventListener("click", startCamera)
+
+// Re-open with new facing mode when select changes while camera is live
+cameraMode.addEventListener("change", () => {
+  if (stream) startCamera()
+})
 
 // =========================
-// DRAW IMAGE
+// DRAW IMAGE ON CANVAS (object-fit: cover logic)
 // =========================
 
 function drawCoverImage(img) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  canvas.style.display = "block"
-
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  )
-
-  // CLIP AREA
+  // Clip to the photo area
   ctx.save()
-
   ctx.beginPath()
-
-  ctx.rect(
-    PHOTO_X,
-    PHOTO_Y,
-    PHOTO_WIDTH,
-    PHOTO_HEIGHT
-  )
-
+  ctx.rect(PHOTO_X, PHOTO_Y, PHOTO_WIDTH, PHOTO_HEIGHT)
   ctx.clip()
 
-  const imageWidth =
-    img.width
-
-  const imageHeight =
-    img.height
-
-  // COVER SCALE
+  // Cover scale: fill the area, crop overflow
   const scale = Math.max(
-    PHOTO_WIDTH / imageWidth,
-    PHOTO_HEIGHT / imageHeight
+    PHOTO_WIDTH  / img.width,
+    PHOTO_HEIGHT / img.height
   )
 
-  const drawWidth =
-    imageWidth * scale
+  const drawW = img.width  * scale
+  const drawH = img.height * scale
+  const drawX = PHOTO_X + (PHOTO_WIDTH  - drawW) / 2
+  const drawY = PHOTO_Y + (PHOTO_HEIGHT - drawH) / 2
 
-  const drawHeight =
-    imageHeight * scale
-
-  const drawX =
-    PHOTO_X +
-    (PHOTO_WIDTH - drawWidth) / 2
-
-  const drawY =
-    PHOTO_Y +
-    (PHOTO_HEIGHT - drawHeight) / 2
-
-  // FILTER
-  ctx.filter = `
-    brightness(1.03)
-    contrast(0.9)
-    saturate(0.9)
-    sepia(0.1)
-  `
-
-  ctx.drawImage(
-    img,
-    drawX,
-    drawY,
-    drawWidth,
-    drawHeight
-  )
-
+  // Subtle film filter
+  ctx.filter = "brightness(1.03) contrast(0.92) saturate(0.88) sepia(0.08)"
+  ctx.drawImage(img, drawX, drawY, drawW, drawH)
   ctx.filter = "none"
 
   ctx.restore()
+
+  setHasContent(true)
 }
 
 // =========================
-// UPLOAD IMAGE
+// UPLOAD
 // =========================
 
-uploadInput.addEventListener(
-  "change",
-  e => {
+uploadInput.addEventListener("change", e => {
+  const file = e.target.files[0]
+  if (!file) return
 
-    const file =
-      e.target.files[0]
-
-    if (!file) return
-
-    const reader =
-      new FileReader()
-
-    reader.onload = () => {
-
-      const img =
-        new Image()
-
-      img.onload = () => {
-
-        drawCoverImage(img)
-      }
-
-      img.src = reader.result
-    }
-
-    reader.readAsDataURL(file)
+  // Stop camera if running
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop())
+    stream = null
+    video.srcObject = null
+    video.style.display = "none"
+    setStreamActive(false)
   }
-)
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    const img = new Image()
+    img.onload = () => drawCoverImage(img)
+    img.src = reader.result
+  }
+  reader.readAsDataURL(file)
+})
 
 // =========================
 // CAPTURE
 // =========================
 
-takePhotoBtn.addEventListener(
-  "click",
-  () => {
+takePhotoBtn.addEventListener("click", () => {
+  if (!stream) return
 
-    if (!stream) return
+  // Draw current video frame to a temp canvas (handles mirroring)
+  const tmp    = document.createElement("canvas")
+  const tmpCtx = tmp.getContext("2d")
+  tmp.width    = video.videoWidth
+  tmp.height   = video.videoHeight
 
-    const tempCanvas =
-      document.createElement("canvas")
-
-    const tempCtx =
-      tempCanvas.getContext("2d")
-
-    tempCanvas.width =
-      video.videoWidth
-
-    tempCanvas.height =
-      video.videoHeight
-
-    const isFrontCamera =
-      cameraMode.value === "user"
-
-    // mirror front camera
-    if (isFrontCamera) {
-
-      tempCtx.translate(
-        tempCanvas.width,
-        0
-      )
-
-      tempCtx.scale(-1, 1)
-    }
-
-    tempCtx.drawImage(
-      video,
-      0,
-      0,
-      tempCanvas.width,
-      tempCanvas.height
-    )
-
-    const img =
-      new Image()
-
-    img.onload = () => {
-
-      drawCoverImage(img)
-    }
-
-    img.src =
-      tempCanvas.toDataURL(
-        "image/png"
-      )
+  const isFront = cameraMode.value === "user"
+  if (isFront) {
+    tmpCtx.translate(tmp.width, 0)
+    tmpCtx.scale(-1, 1)
   }
-)
+
+  tmpCtx.drawImage(video, 0, 0, tmp.width, tmp.height)
+
+  // Hide the live video feed; show the captured frame
+  video.style.display = "none"
+
+  const img = new Image()
+  img.onload = () => drawCoverImage(img)
+  img.src = tmp.toDataURL("image/png")
+})
 
 // =========================
-// DOWNLOAD
+// DOWNLOAD (composite: photo + frame overlay)
 // =========================
 
-downloadBtn.addEventListener(
-  "click",
-  () => {
+downloadBtn.addEventListener("click", () => {
+  const exp    = document.createElement("canvas")
+  const expCtx = exp.getContext("2d")
+  exp.width    = 757
+  exp.height   = 1177
 
-    const exportCanvas =
-      document.createElement("canvas")
+  // 1. Photo layer
+  expCtx.drawImage(canvas, 0, 0)
 
-    const exportCtx =
-      exportCanvas.getContext("2d")
+  // 2. Frame overlay on top
+  expCtx.drawImage(frame, 0, 0, 757, 1177)
 
-    exportCanvas.width = 757
-    exportCanvas.height = 1177
+  const link      = document.createElement("a")
+  link.download   = "nama-nama-photobooth.png"
+  link.href       = exp.toDataURL("image/png")
+  link.click()
+})
 
-    exportCtx.drawImage(
-      canvas,
-      0,
-      0
-    )
+// =========================
+// INIT STATE
+// =========================
 
-    exportCtx.drawImage(
-      frame,
-      0,
-      0,
-      757,
-      1177
-    )
-
-    const link =
-      document.createElement("a")
-
-    link.download =
-      "yahya-yulia-photobooth.png"
-
-    link.href =
-      exportCanvas.toDataURL(
-        "image/png"
-      )
-
-    link.click()
-  }
-)
+setHasContent(false)
+video.style.display = "none"
+takePhotoBtn.disabled = true
+downloadBtn.disabled  = true

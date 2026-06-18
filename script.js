@@ -40,16 +40,12 @@ const PHOTO_WIDTH = 725
 const PHOTO_HEIGHT = 873
 
 // =========================
-// FRAME IMAGE
+// FRAME
 // =========================
 
 const frame = new Image()
 
 frame.src = "frame.png"
-
-frame.onload = () => {
-  drawEmpty()
-}
 
 // =========================
 // CAMERA
@@ -63,16 +59,18 @@ async function startCamera() {
 
     // stop previous stream
     if (stream) {
-      stream.getTracks().forEach(track => {
-        track.stop()
-      })
+
+      stream
+        .getTracks()
+        .forEach(track => track.stop())
     }
 
     const facingMode =
       cameraMode.value
 
     stream =
-      await navigator.mediaDevices
+      await navigator
+        .mediaDevices
         .getUserMedia({
 
           video: {
@@ -85,8 +83,6 @@ async function startCamera() {
         })
 
     video.srcObject = stream
-
-    video.style.display = "block"
 
     // FRONT CAMERA MIRROR
     if (facingMode === "user") {
@@ -102,7 +98,7 @@ async function startCamera() {
 
     console.error(err)
 
-    alert("Camera access failed.")
+    alert("Cannot access camera")
   }
 }
 
@@ -112,32 +108,12 @@ startCameraBtn.addEventListener(
 )
 
 // =========================
-// DRAW EMPTY
-// =========================
-
-function drawEmpty() {
-
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  )
-
-  ctx.drawImage(
-    frame,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  )
-}
-
-// =========================
 // DRAW IMAGE
 // =========================
 
 function drawCoverImage(img) {
+
+  canvas.style.display = "block"
 
   ctx.clearRect(
     0,
@@ -160,8 +136,11 @@ function drawCoverImage(img) {
 
   ctx.clip()
 
-  const imageWidth = img.width
-  const imageHeight = img.height
+  const imageWidth =
+    img.width
+
+  const imageHeight =
+    img.height
 
   // COVER SCALE
   const scale = Math.max(
@@ -175,7 +154,6 @@ function drawCoverImage(img) {
   const drawHeight =
     imageHeight * scale
 
-  // CENTER IMAGE
   const drawX =
     PHOTO_X +
     (PHOTO_WIDTH - drawWidth) / 2
@@ -184,10 +162,7 @@ function drawCoverImage(img) {
     PHOTO_Y +
     (PHOTO_HEIGHT - drawHeight) / 2
 
-  // =========================
-  // RICOH GRII STYLE FILTER
-  // =========================
-
+  // FILTER
   ctx.filter = `
     brightness(1.03)
     contrast(0.9)
@@ -206,18 +181,6 @@ function drawCoverImage(img) {
   ctx.filter = "none"
 
   ctx.restore()
-
-  // =========================
-  // FRAME OVERLAY
-  // =========================
-
-  ctx.drawImage(
-    frame,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  )
 }
 
 // =========================
@@ -238,9 +201,11 @@ uploadInput.addEventListener(
 
     reader.onload = () => {
 
-      const img = new Image()
+      const img =
+        new Image()
 
       img.onload = () => {
+
         drawCoverImage(img)
       }
 
@@ -252,7 +217,7 @@ uploadInput.addEventListener(
 )
 
 // =========================
-// CAPTURE PHOTO
+// CAPTURE
 // =========================
 
 takePhotoBtn.addEventListener(
@@ -276,7 +241,7 @@ takePhotoBtn.addEventListener(
     const isFrontCamera =
       cameraMode.value === "user"
 
-    // MIRROR FRONT CAMERA
+    // mirror front camera
     if (isFrontCamera) {
 
       tempCtx.translate(
@@ -295,24 +260,18 @@ takePhotoBtn.addEventListener(
       tempCanvas.height
     )
 
-    const capturedImage =
+    const img =
       new Image()
 
-    capturedImage.onload = () => {
-      drawCoverImage(capturedImage)
+    img.onload = () => {
+
+      drawCoverImage(img)
     }
 
-    capturedImage.src =
+    img.src =
       tempCanvas.toDataURL(
         "image/png"
       )
-
-    // STOP CAMERA
-    stream.getTracks().forEach(
-      track => track.stop()
-    )
-
-    video.style.display = "none"
   }
 )
 
@@ -324,14 +283,37 @@ downloadBtn.addEventListener(
   "click",
   () => {
 
+    const exportCanvas =
+      document.createElement("canvas")
+
+    const exportCtx =
+      exportCanvas.getContext("2d")
+
+    exportCanvas.width = 757
+    exportCanvas.height = 1177
+
+    exportCtx.drawImage(
+      canvas,
+      0,
+      0
+    )
+
+    exportCtx.drawImage(
+      frame,
+      0,
+      0,
+      757,
+      1177
+    )
+
     const link =
       document.createElement("a")
 
     link.download =
-      "photobox.png"
+      "yahya-yulia-photobooth.png"
 
     link.href =
-      canvas.toDataURL(
+      exportCanvas.toDataURL(
         "image/png"
       )
 

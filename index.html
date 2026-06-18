@@ -10,14 +10,23 @@
 
   <div class="container">
 
-    <h1>Photobox</h1>
+    <h1>PHOTOBOX</h1>
 
-    <div class="buttons">
+    <div class="controls">
+
       <input type="file" id="upload" accept="image/*">
 
-      <button id="cameraBtn">Open Camera</button>
-      <button id="captureBtn">Capture</button>
-      <button id="downloadBtn">Download</button>
+      <select id="cameraSelect">
+        <option value="user">Front Camera</option>
+        <option value="environment">Back Camera</option>
+      </select>
+
+      <button id="openCamera">Open Camera</button>
+
+      <button id="capture">Capture</button>
+
+      <button id="download">Download</button>
+
     </div>
 
     <video id="video" autoplay playsinline></video>

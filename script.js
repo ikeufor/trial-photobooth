@@ -1,316 +1,175 @@
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const uploadInput = document.getElementById("upload")
+const cameraBtn = document.getElementById("cameraBtn")
+const captureBtn = document.getElementById("captureBtn")
+const downloadBtn = document.getElementById("downloadBtn")
 
-const photoInput = document.getElementById("photoInput");
-const generateBtn = document.getElementById("generateBtn");
-const downloadBtn = document.getElementById("downloadBtn");
+const video = document.getElementById("video")
+const canvas = document.getElementById("canvas")
+const ctx = canvas.getContext("2d")
 
-// ukuran asli frame
-canvas.width = 1365;
-canvas.height = 2048;
+const frame = new Image()
+frame.src = "frame.png"
 
-// =====================
-// FRAME
-// =====================
+canvas.width = 1080
+canvas.height = 1350
 
-const frame = new Image();
+let userImage = null
+let stream = null
+
+// posisi foto
+let imgX = 25
+let imgY = 135
+
+// ukuran area foto
+let imgWidth = 1030
+let imgHeight = 1010
+
+// zoom
+let scale = 1
+
+// drag
+let dragging = false
+let startX = 0
+let startY = 0
+
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+  if (userImage) {
+
+    const drawWidth = imgWidth * scale
+    const drawHeight = imgHeight * scale
+
+    ctx.drawImage(
+      userImage,
+      imgX,
+      imgY,
+      drawWidth,
+      drawHeight
+    )
+  }
+
+  ctx.drawImage(frame, 0, 0, canvas.width, canvas.height)
+}
 
 frame.onload = () => {
-
-    ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-    ctx.drawImage(
-        frame,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-    );
-
-};
-
-frame.src = "assets/frame.png";
-
-
-// =====================
-// LOAD IMAGE
-// =====================
-
-function loadImage(file) {
-
-    return new Promise((resolve, reject) => {
-
-        const img = new Image();
-
-        img.onload = () => resolve(img);
-
-        img.onerror = reject;
-
-        img.src = URL.createObjectURL(file);
-
-    });
-
+  drawCanvas()
 }
 
+// upload foto
+uploadInput.addEventListener("change", (e) => {
+  const file = e.target.files[0]
 
-// =====================
-// OBJECT FIT COVER
-// =====================
+  if (!file) return
 
-function drawCoverImage(
-    ctx,
-    img,
-    x,
-    y,
-    w,
-    h
-) {
+  const reader = new FileReader()
 
-    const imageRatio =
-        img.width / img.height;
+  reader.onload = () => {
+    userImage = new Image()
 
-    const frameRatio =
-        w / h;
-
-    let sx;
-    let sy;
-    let sw;
-    let sh;
-
-    if (imageRatio > frameRatio) {
-
-        sh = img.height;
-        sw = sh * frameRatio;
-
-        sx =
-            (img.width - sw) / 2;
-
-        sy = 0;
-
-    } else {
-
-        sw = img.width;
-
-        sh =
-            sw / frameRatio;
-
-        sx = 0;
-
-        sy =
-            (img.height - sh) / 2;
-
+    userImage.onload = () => {
+      drawCanvas()
     }
 
-    ctx.drawImage(
-        img,
-        sx,
-        sy,
-        sw,
-        sh,
-        x,
-        y,
-        w,
-        h
-    );
+    userImage.src = reader.result
+  }
 
-}
+  reader.readAsDataURL(file)
+})
 
+// buka kamera
+cameraBtn.addEventListener("click", async () => {
 
-// =====================
-// GENERATE
-// =====================
-
-generateBtn.addEventListener(
-    "click",
-    async () => {
-
-        const files =
-            photoInput.files;
-
-        if (files.length !== 4) {
-
-            alert(
-                "Please upload exactly 4 photos."
-            );
-
-            return;
-
-        }
-
-        try {
-
-            const images = [];
-
-            for (
-                let i = 0;
-                i < 4;
-                i++
-            ) {
-
-                const img =
-                    await loadImage(
-                        files[i]
-                    );
-
-                images.push(img);
-
-            }
-
-            ctx.clearRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-            // =====================
-            // SLOTS
-            // =====================
-
-            const slots = [
-
-                // LEFT 1
-                {
-                    x: 44,
-                    y: 195,
-                    w: 588,
-                    h: 413
-                },
-
-                // LEFT 2
-                {
-                    x: 44,
-                    y: 640,
-                    w: 588,
-                    h: 413
-                },
-
-                // LEFT 3
-                {
-                    x: 44,
-                    y: 1085,
-                    w: 588,
-                    h: 413
-                },
-
-                // LEFT 4
-                {
-                    x: 44,
-                    y: 1530,
-                    w: 588,
-                    h: 413
-                },
-
-                // RIGHT 1
-                {
-                    x: 733,
-                    y: 96,
-                    w: 588,
-                    h: 413
-                },
-
-                // RIGHT 2
-                {
-                    x: 733,
-                    y: 541,
-                    w: 588,
-                    h: 413
-                },
-
-                // RIGHT 3
-                {
-                    x: 733,
-                    y: 986,
-                    w: 588,
-                    h: 413
-                },
-
-                // RIGHT 4
-                {
-                    x: 733,
-                    y: 1431,
-                    w: 588,
-                    h: 413
-                }
-
-            ];
-
-            // isi 8 kotak dari 4 foto
-
-            for (
-                let i = 0;
-                i < 8;
-                i++
-            ) {
-
-                const img =
-                    images[i % 4];
-
-                const slot =
-                    slots[i];
-
-                drawCoverImage(
-                    ctx,
-                    img,
-                    slot.x,
-                    slot.y,
-                    slot.w,
-                    slot.h
-                );
-
-            }
-
-            // frame di atas foto
-
-            ctx.drawImage(
-                frame,
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-        } catch (error) {
-
-            console.error(error);
-
-            alert(
-                "Failed to generate photobox."
-            );
-
-        }
-
+  stream = await navigator.mediaDevices.getUserMedia({
+    video: {
+      facingMode: "user"
     }
-);
+  })
 
+  video.srcObject = stream
+  video.style.display = "block"
+})
 
-// =====================
-// DOWNLOAD
-// =====================
+// capture kamera
+captureBtn.addEventListener("click", () => {
 
-downloadBtn.addEventListener(
-    "click",
-    () => {
+  if (!video.srcObject) return
 
-        const link =
-            document.createElement(
-                "a"
-            );
+  userImage = document.createElement("canvas")
+  userImage.width = video.videoWidth
+  userImage.height = video.videoHeight
 
-        link.download =
-            "photobox.png";
+  const tempCtx = userImage.getContext("2d")
 
-        link.href =
-            canvas.toDataURL(
-                "image/png"
-            );
+  tempCtx.drawImage(
+    video,
+    0,
+    0,
+    userImage.width,
+    userImage.height
+  )
 
-        link.click();
+  drawCanvas()
 
-    }
-);
+  // matikan kamera
+  stream.getTracks().forEach(track => track.stop())
+
+  video.style.display = "none"
+})
+
+// download hasil
+downloadBtn.addEventListener("click", () => {
+
+  const link = document.createElement("a")
+
+  link.download = "photobox.png"
+  link.href = canvas.toDataURL("image/png")
+
+  link.click()
+})
+
+// DRAG FOTO
+
+canvas.addEventListener("pointerdown", (e) => {
+  dragging = true
+
+  startX = e.clientX
+  startY = e.clientY
+})
+
+canvas.addEventListener("pointermove", (e) => {
+
+  if (!dragging) return
+
+  const dx = (e.clientX - startX) * 2
+  const dy = (e.clientY - startY) * 2
+
+  imgX += dx
+  imgY += dy
+
+  startX = e.clientX
+  startY = e.clientY
+
+  drawCanvas()
+})
+
+canvas.addEventListener("pointerup", () => {
+  dragging = false
+})
+
+// zoom pakai scroll
+canvas.addEventListener("wheel", (e) => {
+
+  e.preventDefault()
+
+  if (e.deltaY > 0) {
+    scale -= 0.05
+  } else {
+    scale += 0.05
+  }
+
+  if (scale < 0.2) scale = 0.2
+  if (scale > 3) scale = 3
+
+  drawCanvas()
+})

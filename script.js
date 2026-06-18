@@ -112,75 +112,43 @@ startCameraBtn.addEventListener(
 // =========================
 
 function drawCoverImage(img) {
-
   canvas.style.display = "block"
-
-  ctx.clearRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  )
-
-  // CLIP AREA
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  
+  // 1. CLIP & GAMBAR FOTO
   ctx.save()
-
   ctx.beginPath()
-
-  ctx.rect(
-    PHOTO_X,
-    PHOTO_Y,
-    PHOTO_WIDTH,
-    PHOTO_HEIGHT
-  )
-
+  ctx.rect(PHOTO_X, PHOTO_Y, PHOTO_WIDTH, PHOTO_HEIGHT)
   ctx.clip()
-
-  const imageWidth =
-    img.width
-
-  const imageHeight =
-    img.height
-
-  // COVER SCALE
+  
+  const imageWidth = img.width
+  const imageHeight = img.height
+  
   const scale = Math.max(
     PHOTO_WIDTH / imageWidth,
     PHOTO_HEIGHT / imageHeight
   )
-
-  const drawWidth =
-    imageWidth * scale
-
-  const drawHeight =
-    imageHeight * scale
-
-  const drawX =
-    PHOTO_X +
-    (PHOTO_WIDTH - drawWidth) / 2
-
-  const drawY =
-    PHOTO_Y +
-    (PHOTO_HEIGHT - drawHeight) / 2
-
-  // FILTER
-  ctx.filter = `
-    brightness(1.03)
-    contrast(0.9)
-    saturate(0.9)
-    sepia(0.1)
-  `
-
-  ctx.drawImage(
-    img,
-    drawX,
-    drawY,
-    drawWidth,
-    drawHeight
-  )
-
+  
+  const drawWidth = imageWidth * scale
+  const drawHeight = imageHeight * scale
+  
+  const drawX = PHOTO_X + (PHOTO_WIDTH - drawWidth) / 2
+  const drawY = PHOTO_Y + (PHOTO_HEIGHT - drawHeight) / 2
+  
+  ctx.filter = `brightness(1.03) contrast(0.9) saturate(0.9) sepia(0.1)`
+  ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight)
   ctx.filter = "none"
-
   ctx.restore()
+
+  // 2. TAMBAHKAN INI: Langsung gambar frame di atas foto pada canvas yang sama
+  if (frame.complete) {
+    ctx.drawImage(frame, 0, 0, canvas.width, canvas.height)
+  } else {
+    frame.onload = () => {
+      ctx.drawImage(frame, 0, 0, canvas.width, canvas.height)
+    }
+  }
 }
 
 // =========================

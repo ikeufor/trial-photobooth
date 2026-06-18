@@ -1,82 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>contoh aja inimah</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Photobox</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="page-wrapper">
 
-        <header class="hero">
-            <div class="hero-badge">✦ 27.06.2026 ✦</div>
-            <h1>
-                <span class="title-line">halo</span>
-                <span class="title-with">ini cuma</span>
-                <span class="title-infinite">∞ NYOBA ∞</span>
-            </h1>
-            <p class="tagline">❤︎⁠ framenya ga berubah ❤︎⁠</p>
-        </header>
+  <div class="container">
 
-        <main class="main-card">
-            <p class="description">
-                Upload four of your favourite photos and get a custom photo strip to keep forever.
-                Landscape photos in 4:3 ratio fit perfectly! ♡
-                <br><br>
-                <strong>How it works:</strong> Upload → Generate Strip → Download (if you want)
-            </p>
+    <h1>Photobox</h1>
 
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                        <polyline points="17 8 12 3 7 8"/>
-                        <line x1="12" y1="3" x2="12" y2="15"/>
-                    </svg>
-                </div>
-                <span class="upload-label">Choose 4 photos</span>
-                <span class="upload-hint">tap to browse</span>
-                <input type="file" id="photoInput" accept="image/*" multiple>
-            </div>
+    <div class="buttons">
+      <input type="file" id="upload" accept="image/*">
 
-            <div id="fileStatus" class="file-status"></div>
-
-            <div class="button-group">
-                <button id="generateBtn" class="btn btn-primary">
-                    <span>Generate Strip</span>
-                </button>
-                <button id="downloadBtn" class="btn btn-secondary">
-                    <span>Download</span>
-                </button>
-            </div>
-
-            <p class="privacy-note">
-                🔒 Your photos are never uploaded or stored, everything happens on your device ♡
-            </p>
-        </main>
-
-        <section class="canvas-section">
-            <canvas id="canvas"></canvas>
-        </section>
-
+      <button id="cameraBtn">Open Camera</button>
+      <button id="captureBtn">Capture</button>
+      <button id="downloadBtn">Download</button>
     </div>
-    <script src="script.js"></script>
-    <script>
-        // Show selected file count
-        document.getElementById('photoInput').addEventListener('change', function() {
-            const count = this.files.length;
-            const status = document.getElementById('fileStatus');
-            const label = document.querySelector('.upload-label');
-            if (count > 0) {
-                label.textContent = count + ' photo' + (count !== 1 ? 's' : '') + ' selected';
-                document.querySelector('.upload-area').classList.add('has-files');
-            }
-        });
 
-    </script>
+    <video id="video" autoplay playsinline></video>
+
+    <canvas id="canvas"></canvas>
+
+  </div>
+
+  <script src="script.js"></script>
+
 </body>
 </html>

@@ -1,63 +1,80 @@
-const uploadInput = document.getElementById("upload")
-const cameraBtn = document.getElementById("cameraBtn")
-const captureBtn = document.getElementById("captureBtn")
-const downloadBtn = document.getElementById("downloadBtn")
+const upload = document.getElementById("upload")
+const cameraSelect = document.getElementById("cameraSelect")
+
+const openCameraBtn = document.getElementById("openCamera")
+const captureBtn = document.getElementById("capture")
+const downloadBtn = document.getElementById("download")
 
 const video = document.getElementById("video")
+
 const canvas = document.getElementById("canvas")
 const ctx = canvas.getContext("2d")
+
+// FRAME SIZE
+canvas.width = 757
+canvas.height = 1177
+
+// FOTO AREA
+const photoX = 16
+const photoY = 102
+
+const photoWidth = 725
+const photoHeight = 873
 
 const frame = new Image()
 frame.src = "frame.png"
 
-canvas.width = 1080
-canvas.height = 1350
-
-let userImage = null
+let currentImage = null
 let stream = null
 
-// posisi foto
-let imgX = 25
-let imgY = 135
+// DRAW SEMUA
+function drawFinalImage(img) {
 
-// ukuran area foto
-let imgWidth = 1030
-let imgHeight = 1010
-
-// zoom
-let scale = 1
-
-// drag
-let dragging = false
-let startX = 0
-let startY = 0
-
-function drawCanvas() {
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-  if (userImage) {
+  // ukuran asli image
+  const imgWidth = img.width
+  const imgHeight = img.height
 
-    const drawWidth = imgWidth * scale
-    const drawHeight = imgHeight * scale
+  // cover/fill logic
+  const scale = Math.max(
+    photoWidth / imgWidth,
+    photoHeight / imgHeight
+  )
 
-    ctx.drawImage(
-      userImage,
-      imgX,
-      imgY,
-      drawWidth,
-      drawHeight
-    )
-  }
+  const drawWidth = imgWidth * scale
+  const drawHeight = imgHeight * scale
 
+  // center crop
+  const x = photoX - (drawWidth - photoWidth) / 2
+  const y = photoY - (drawHeight - photoHeight) / 2
+
+  ctx.drawImage(
+    img,
+    x,
+    y,
+    drawWidth,
+    drawHeight
+  )
+
+  // overlay frame
+  ctx.drawImage(
+    frame,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  )
+}
+
+// LOAD FRAME
+frame.onload = () => {
   ctx.drawImage(frame, 0, 0, canvas.width, canvas.height)
 }
 
-frame.onload = () => {
-  drawCanvas()
-}
+// UPLOAD FOTO
+upload.addEventListener("change", (e) => {
 
-// upload foto
-uploadInput.addEventListener("change", (e) => {
   const file = e.target.files[0]
 
   if (!file) return
@@ -65,51 +82,77 @@ uploadInput.addEventListener("change", (e) => {
   const reader = new FileReader()
 
   reader.onload = () => {
-    userImage = new Image()
 
-    userImage.onload = () => {
-      drawCanvas()
+    const img = new Image()
+
+    img.onload = () => {
+      currentImage = img
+      drawFinalImage(img)
     }
 
-    userImage.src = reader.result
+    img.src = reader.result
   }
 
   reader.readAsDataURL(file)
 })
 
-// buka kamera
-cameraBtn.addEventListener("click", async () => {
+// OPEN CAMERA
+openCameraBtn.addEventListener("click", async () => {
+
+  // stop stream lama
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop())
+  }
+
+  const facingMode = cameraSelect.value
 
   stream = await navigator.mediaDevices.getUserMedia({
     video: {
-      facingMode: "user"
-    }
+      facingMode: facingMode
+    },
+    audio: false
   })
 
   video.srcObject = stream
+
   video.style.display = "block"
 })
 
-// capture kamera
+// CAPTURE
 captureBtn.addEventListener("click", () => {
 
-  if (!video.srcObject) return
+  if (!stream) return
 
-  userImage = document.createElement("canvas")
-  userImage.width = video.videoWidth
-  userImage.height = video.videoHeight
+  const tempCanvas = document.createElement("canvas")
+  const tempCtx = tempCanvas.getContext("2d")
 
-  const tempCtx = userImage.getContext("2d")
+  tempCanvas.width = video.videoWidth
+  tempCanvas.height = video.videoHeight
+
+  // PENTING:
+  // supaya front camera tidak mirror
+
+  tempCtx.translate(tempCanvas.width, 0)
+  tempCtx.scale(-1, 1)
 
   tempCtx.drawImage(
     video,
     0,
     0,
-    userImage.width,
-    userImage.height
+    tempCanvas.width,
+    tempCanvas.height
   )
 
-  drawCanvas()
+  const capturedImage = new Image()
+
+  capturedImage.onload = () => {
+
+    currentImage = capturedImage
+
+    drawFinalImage(capturedImage)
+  }
+
+  capturedImage.src = tempCanvas.toDataURL("image/png")
 
   // matikan kamera
   stream.getTracks().forEach(track => track.stop())
@@ -117,59 +160,14 @@ captureBtn.addEventListener("click", () => {
   video.style.display = "none"
 })
 
-// download hasil
+// DOWNLOAD
 downloadBtn.addEventListener("click", () => {
 
   const link = document.createElement("a")
 
   link.download = "photobox.png"
+
   link.href = canvas.toDataURL("image/png")
 
   link.click()
-})
-
-// DRAG FOTO
-
-canvas.addEventListener("pointerdown", (e) => {
-  dragging = true
-
-  startX = e.clientX
-  startY = e.clientY
-})
-
-canvas.addEventListener("pointermove", (e) => {
-
-  if (!dragging) return
-
-  const dx = (e.clientX - startX) * 2
-  const dy = (e.clientY - startY) * 2
-
-  imgX += dx
-  imgY += dy
-
-  startX = e.clientX
-  startY = e.clientY
-
-  drawCanvas()
-})
-
-canvas.addEventListener("pointerup", () => {
-  dragging = false
-})
-
-// zoom pakai scroll
-canvas.addEventListener("wheel", (e) => {
-
-  e.preventDefault()
-
-  if (e.deltaY > 0) {
-    scale -= 0.05
-  } else {
-    scale += 0.05
-  }
-
-  if (scale < 0.2) scale = 0.2
-  if (scale > 3) scale = 3
-
-  drawCanvas()
 })

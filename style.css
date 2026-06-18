@@ -95,17 +95,13 @@ canvas {
 
   position: absolute;
 
-  left: 6.8%;
+  top: 8.7%;
+  left: 2.1%;
 
-  top: 6.9%;
-
-  width: 79.4%;
-
-  height: 78.8%;
+  width: 95.8%;
+  height: 74.2%;
 
   object-fit: cover;
-
-  overflow: hidden;
 
   z-index: 1;
 

@@ -92,19 +92,18 @@ body {
 
 video,
 canvas {
-
   position: absolute;
 
-  top: 8.65%;
-  left: 6.6%;
+  /* Jarak dari atas dan kiri */
+  top: 8.67%;   /* 102px / 1177px */
+  left: 6.6%;   /* 50px / 757px */
 
-  width: 87.1%;
-  height: 73.9%;
+  /* Ukuran area foto */
+  width: 87.05%; /* 659px / 757px */
+  height: 73.92%;/* 870px / 1177px */
 
   object-fit: cover;
-
   z-index: 1;
-
   background: black;
 }
 

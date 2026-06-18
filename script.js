@@ -33,11 +33,11 @@ canvas.height = 1177
 // PHOTO AREA
 // =========================
 
-const PHOTO_X = 50
-const PHOTO_Y = 102
+const PHOTO_X = 50;
+const PHOTO_Y = 102;
 
-const PHOTO_WIDTH = 660
-const PHOTO_HEIGHT = 870
+const PHOTO_WIDTH = 659;
+const PHOTO_HEIGHT = 870;
 
 // =========================
 // FRAME

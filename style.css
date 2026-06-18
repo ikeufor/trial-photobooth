@@ -90,8 +90,8 @@ body {
   display: block;
 }
 
-/* Canvas fills photo-area completely; hidden until capture/upload */
-#canvas {
+/* Preview img: replaces canvas in the DOM — fills area perfectly via object-fit */
+#preview {
   position: absolute;
   inset: 0;
   width: 100%;

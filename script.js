@@ -51,7 +51,7 @@ async function startCamera() {
 
   try {
 
-    // stop camera lama
+    // stop stream lama
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
     }
@@ -61,7 +61,7 @@ async function startCamera() {
     stream = await navigator.mediaDevices.getUserMedia({
       video: {
         facingMode: {
-          exact: facingMode
+          ideal: facingMode
         }
       },
       audio: false
@@ -71,24 +71,22 @@ async function startCamera() {
 
     video.style.display = "block"
 
+    // FRONT CAMERA = MIRROR
+    if (facingMode === "user") {
+      video.classList.add("mirror")
+    } else {
+      video.classList.remove("mirror")
+    }
+
   } catch (err) {
-
-    // fallback kalau facingMode exact gagal
-
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: cameraMode.value
-      },
-      audio: false
-    })
-
-    video.srcObject = stream
-
-    video.style.display = "block"
+    console.error(err)
   }
 }
 
-startCameraBtn.addEventListener("click", startCamera)
+startCameraBtn.addEventListener(
+  "click",
+  startCamera
+)
 
 // =========================
 // DRAW EMPTY
@@ -211,9 +209,21 @@ takePhotoBtn.addEventListener("click", () => {
   tempCanvas.width = video.videoWidth
   tempCanvas.height = video.videoHeight
 
-  // PENTING:
-  // TIDAK MIRROR
-  // draw langsung apa adanya
+  const isFrontCamera =
+    cameraMode.value === "user"
+
+  // kalau front camera
+  // hasil ikut mirror
+
+  if (isFrontCamera) {
+
+    tempCtx.translate(
+      tempCanvas.width,
+      0
+    )
+
+    tempCtx.scale(-1, 1)
+  }
 
   tempCtx.drawImage(
     video,
@@ -229,7 +239,8 @@ takePhotoBtn.addEventListener("click", () => {
     drawCoverImage(img)
   }
 
-  img.src = tempCanvas.toDataURL("image/png")
+  img.src =
+    tempCanvas.toDataURL("image/png")
 
   // stop camera
   stream.getTracks().forEach(track => track.stop())

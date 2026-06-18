@@ -84,6 +84,10 @@ body {
 
   overflow: hidden;
 
+  border-radius: 28px;
+
+  box-shadow:
+    0 25px 50px rgba(0,0,0,0.16);
 }
 
 /* =========================

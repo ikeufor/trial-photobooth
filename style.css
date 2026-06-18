@@ -79,3 +79,7 @@ canvas {
   background: transparent;
 
 }
+
+.mirror {
+  transform: scaleX(-1);
+}

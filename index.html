@@ -1,21 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-  <title>Photobox</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 
-  <link rel="stylesheet" href="style.css">
+  <title>Nama & Nama</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  />
+
 </head>
+
 <body>
 
   <div class="app">
 
     <div class="hero">
-  <h1>Nama & Nama</h1>
-  <p>Wedding Photobooth</p>
-</div>
+
+      <h1>Nama & Nama</h1>
+
+      <p>Wedding Photobooth</p>
+
+    </div>
+
+    <!-- FRAME PREVIEW -->
+
+    <div class="preview-container">
+
+      <video
+        id="video"
+        autoplay
+        playsinline
+        muted
+      ></video>
+
+      <canvas id="canvas"></canvas>
+
+      <img
+        src="frame.png"
+        class="frame-overlay"
+      />
+
+    </div>
+
+    <!-- CONTROLS -->
 
     <div class="controls">
 
@@ -26,8 +61,15 @@
       >
 
       <select id="cameraMode">
-        <option value="user">Front Camera</option>
-        <option value="environment">Back Camera</option>
+
+        <option value="user">
+          Front Camera
+        </option>
+
+        <option value="environment">
+          Back Camera
+        </option>
+
       </select>
 
       <button id="startCamera">
@@ -35,7 +77,7 @@
       </button>
 
       <button id="takePhoto">
-        Capture
+        Capture Photo
       </button>
 
       <button id="download">
@@ -44,19 +86,10 @@
 
     </div>
 
-    <video
-      id="video"
-      autoplay
-      playsinline
-      muted
-    ></video>
-
-    <canvas id="canvas"></canvas>
-
     <div class="footer">
-  CAPTURED WITH LOVE
-</div>
-    
+      CAPTURED WITH LOVE
+    </div>
+
   </div>
 
   <script src="script.js"></script>

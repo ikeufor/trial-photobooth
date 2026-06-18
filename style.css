@@ -32,6 +32,10 @@ body {
   max-width: 430px;
 }
 
+/* =========================
+   HERO
+========================= */
+
 .hero {
 
   text-align: center;
@@ -65,7 +69,7 @@ body {
 }
 
 /* =========================
-   PREVIEW
+   FRAME CONTAINER
 ========================= */
 
 .preview-container {
@@ -76,31 +80,30 @@ body {
 
   aspect-ratio: 757 / 1177;
 
+  margin-bottom: 24px;
+
   overflow: hidden;
 
   border-radius: 28px;
 
   box-shadow:
     0 25px 50px rgba(0,0,0,0.16);
-
-  margin-bottom: 24px;
 }
 
+/* =========================
+   VIDEO AREA
+========================= */
+
 video,
-canvas,
-.frame-overlay {
+canvas {
 
   position: absolute;
 
-  inset: 0;
+  top: 8.7%;
+  left: 2.1%;
 
-  width: 100%;
-  height: 100%;
-}
-
-/* VIDEO */
-
-video {
+  width: 95.8%;
+  height: 74.2%;
 
   object-fit: cover;
 
@@ -109,25 +112,36 @@ video {
   background: black;
 }
 
-/* CANVAS */
+/* =========================
+   CANVAS
+========================= */
 
 canvas {
-
-  z-index: 2;
 
   display: none;
 }
 
-/* FRAME */
+/* =========================
+   FRAME
+========================= */
 
 .frame-overlay {
+
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
 
   z-index: 3;
 
   pointer-events: none;
 }
 
-/* MIRROR */
+/* =========================
+   MIRROR
+========================= */
 
 .mirror {
 
@@ -202,7 +216,9 @@ button:active {
   font-weight: 500;
 }
 
-/* FOOTER */
+/* =========================
+   FOOTER
+========================= */
 
 .footer {
 

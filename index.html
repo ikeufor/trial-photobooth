@@ -3,33 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
   <title>Photobox</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="container">
+  <div class="app">
 
     <h1>PHOTOBOX</h1>
 
     <div class="controls">
 
-      <input type="file" id="upload" accept="image/*">
+      <input
+        type="file"
+        id="upload"
+        accept="image/*"
+      >
 
-      <select id="cameraSelect">
+      <select id="cameraMode">
         <option value="user">Front Camera</option>
         <option value="environment">Back Camera</option>
       </select>
 
-      <button id="openCamera">Open Camera</button>
+      <button id="startCamera">
+        Open Camera
+      </button>
 
-      <button id="capture">Capture</button>
+      <button id="takePhoto">
+        Capture
+      </button>
 
-      <button id="download">Download</button>
+      <button id="download">
+        Download
+      </button>
 
     </div>
 
-    <video id="video" autoplay playsinline></video>
+    <video
+      id="video"
+      autoplay
+      playsinline
+      muted
+    ></video>
 
     <canvas id="canvas"></canvas>
 

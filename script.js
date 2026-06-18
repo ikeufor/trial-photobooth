@@ -23,7 +23,7 @@ const ctx =
   canvas.getContext("2d")
 
 // =========================
-// SIZE
+// CANVAS SIZE
 // =========================
 
 canvas.width = 757
@@ -48,12 +48,6 @@ const frame = new Image()
 frame.src = "frame.png"
 
 // =========================
-// CURRENT IMAGE
-// =========================
-
-let currentImage = null
-
-// =========================
 // CAMERA
 // =========================
 
@@ -63,7 +57,7 @@ async function startCamera() {
 
   try {
 
-    // stop old stream
+    // stop previous stream
     if (stream) {
 
       stream
@@ -89,10 +83,6 @@ async function startCamera() {
         })
 
     video.srcObject = stream
-
-    video.style.display = "block"
-
-    canvas.style.display = "none"
 
     // FRONT CAMERA MIRROR
     if (facingMode === "user") {
@@ -121,9 +111,7 @@ startCameraBtn.addEventListener(
 // DRAW IMAGE
 // =========================
 
-function drawImageCover(img) {
-
-  currentImage = img
+function drawCoverImage(img) {
 
   canvas.style.display = "block"
 
@@ -134,45 +122,47 @@ function drawImageCover(img) {
     canvas.height
   )
 
-  // =========================
-  // COVER CROP
-  // =========================
+  // CLIP AREA
+  ctx.save()
 
-  const imageAspect =
-    img.width / img.height
+  ctx.beginPath()
 
-  const frameAspect =
-    PHOTO_WIDTH / PHOTO_HEIGHT
+  ctx.rect(
+    PHOTO_X,
+    PHOTO_Y,
+    PHOTO_WIDTH,
+    PHOTO_HEIGHT
+  )
 
-  let sx = 0
-  let sy = 0
-  let sw = img.width
-  let sh = img.height
+  ctx.clip()
 
-  // image terlalu lebar
-  if (imageAspect > frameAspect) {
+  const imageWidth =
+    img.width
 
-    sw =
-      img.height * frameAspect
+  const imageHeight =
+    img.height
 
-    sx =
-      (img.width - sw) / 2
-  }
+  // COVER SCALE
+  const scale = Math.max(
+    PHOTO_WIDTH / imageWidth,
+    PHOTO_HEIGHT / imageHeight
+  )
 
-  // image terlalu tinggi
-  else {
+  const drawWidth =
+    imageWidth * scale
 
-    sh =
-      img.width / frameAspect
+  const drawHeight =
+    imageHeight * scale
 
-    sy =
-      (img.height - sh) / 2
-  }
+  const drawX =
+    PHOTO_X +
+    (PHOTO_WIDTH - drawWidth) / 2
 
-  // =========================
+  const drawY =
+    PHOTO_Y +
+    (PHOTO_HEIGHT - drawHeight) / 2
+
   // FILTER
-  // =========================
-
   ctx.filter = `
     brightness(1.03)
     contrast(0.9)
@@ -180,30 +170,21 @@ function drawImageCover(img) {
     sepia(0.1)
   `
 
-  // =========================
-  // DRAW
-  // =========================
-
   ctx.drawImage(
-
     img,
-
-    sx,
-    sy,
-    sw,
-    sh,
-
-    PHOTO_X,
-    PHOTO_Y,
-    PHOTO_WIDTH,
-    PHOTO_HEIGHT
+    drawX,
+    drawY,
+    drawWidth,
+    drawHeight
   )
 
   ctx.filter = "none"
+
+  ctx.restore()
 }
 
 // =========================
-// UPLOAD
+// UPLOAD IMAGE
 // =========================
 
 uploadInput.addEventListener(
@@ -225,7 +206,7 @@ uploadInput.addEventListener(
 
       img.onload = () => {
 
-        drawImageCover(img)
+        drawCoverImage(img)
       }
 
       img.src = reader.result
@@ -260,7 +241,7 @@ takePhotoBtn.addEventListener(
     const isFrontCamera =
       cameraMode.value === "user"
 
-    // MIRROR FRONT CAMERA
+    // mirror front camera
     if (isFrontCamera) {
 
       tempCtx.translate(
@@ -279,17 +260,15 @@ takePhotoBtn.addEventListener(
       tempCanvas.height
     )
 
-    const capturedImage =
+    const img =
       new Image()
 
-    capturedImage.onload = () => {
+    img.onload = () => {
 
-      drawImageCover(
-        capturedImage
-      )
+      drawCoverImage(img)
     }
 
-    capturedImage.src =
+    img.src =
       tempCanvas.toDataURL(
         "image/png"
       )
@@ -313,14 +292,12 @@ downloadBtn.addEventListener(
     exportCanvas.width = 757
     exportCanvas.height = 1177
 
-    // photo
     exportCtx.drawImage(
       canvas,
       0,
       0
     )
 
-    // frame
     exportCtx.drawImage(
       frame,
       0,
@@ -333,7 +310,7 @@ downloadBtn.addEventListener(
       document.createElement("a")
 
     link.download =
-      "photobox.png"
+      "yahya-yulia-photobooth.png"
 
     link.href =
       exportCanvas.toDataURL(

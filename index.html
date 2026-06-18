@@ -1,98 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
   <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nama & Nama</title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  />
-
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-
   <div class="app">
 
     <div class="hero">
-
-      <h1>Nama & Nama</h1>
-
+      <h1>Nama &amp; Nama</h1>
       <p>Wedding Photobooth</p>
-
     </div>
 
     <!-- FRAME PREVIEW -->
-
     <div class="preview-container">
-
-      <video
-        id="video"
-        autoplay
-        playsinline
-        muted
-      ></video>
-
-      <canvas id="canvas"></canvas>
-
-      <img
-        src="frame.png"
-        class="frame-overlay"
-      />
-
+      <!-- video & canvas sit inside .photo-area, not the full frame -->
+      <div class="photo-area">
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="canvas"></canvas>
+        <div class="placeholder" id="placeholder">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          <span>Upload or open camera</span>
+        </div>
+      </div>
+      <img src="frame.png" class="frame-overlay" alt="" />
     </div>
 
     <!-- CONTROLS -->
-
     <div class="controls">
 
-      <input
-        type="file"
-        id="upload"
-        accept="image/*"
-      >
+      <!-- Upload row -->
+      <label class="btn btn-ghost" for="upload">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        Upload Photo
+      </label>
+      <input type="file" id="upload" accept="image/*" />
 
-      <select id="cameraMode">
+      <!-- Camera group -->
+      <div class="camera-group">
+        <select id="cameraMode" class="btn btn-ghost select-inline">
+          <option value="user">Front Camera</option>
+          <option value="environment">Back Camera</option>
+        </select>
+        <button id="startCamera" class="btn btn-ghost icon-btn" title="Open Camera">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          Open
+        </button>
+      </div>
 
-        <option value="user">
-          Front Camera
-        </option>
-
-        <option value="environment">
-          Back Camera
-        </option>
-
-      </select>
-
-      <button id="startCamera">
-        Open Camera
+      <!-- Capture -->
+      <button id="takePhoto" class="btn btn-primary" disabled>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="3" fill="currentColor"/>
+        </svg>
+        Capture
       </button>
 
-      <button id="takePhoto">
-        Capture Photo
-      </button>
-
-      <button id="download">
-        Download
+      <!-- Download -->
+      <button id="download" class="btn btn-secondary" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Save Photo
       </button>
 
     </div>
 
-    <div class="footer">
-      CAPTURED WITH LOVE
-    </div>
-
+    <div class="footer">Captured with love</div>
   </div>
 
   <script src="script.js"></script>
-
 </body>
 </html>

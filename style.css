@@ -92,18 +92,19 @@ body {
 
 video,
 canvas {
+
   position: absolute;
 
-  /* Jarak dari atas dan kiri */
-  top: 8.67%;   /* 102px / 1177px */
-  left: 6.6%;   /* 50px / 757px */
+  top: 8.7%;
+  left: 2.1%;
 
-  /* Ukuran area foto */
-  width: 87.05%; /* 659px / 757px */
-  height: 73.92%;/* 870px / 1177px */
+  width: 95.8%;
+  height: 74.2%;
 
   object-fit: cover;
+
   z-index: 1;
+
   background: black;
 }
 
@@ -121,11 +122,16 @@ canvas {
 ========================= */
 
 .frame-overlay {
+
   position: absolute;
+
   inset: 0;
+
   width: 100%;
   height: 100%;
-  z-index: 10; /* Naikkan z-index agar mutlak berada di atas video & canvas */
+
+  z-index: 3;
+
   pointer-events: none;
 }
 

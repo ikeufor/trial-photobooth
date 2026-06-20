@@ -6,6 +6,8 @@ const downloadBtn    = document.getElementById("download")
 const video          = document.getElementById("video")
 const previewImg     = document.getElementById("preview")
 const placeholder    = document.getElementById("placeholder")
+const photoArea      = document.getElementById("photoArea")
+const focusRing      = document.getElementById("focusRing")
 
 // =========================
 // OFF-SCREEN CANVAS
@@ -101,6 +103,58 @@ cameraMode.addEventListener("change", () => {
 })
 
 // =========================
+// TAP TO FOCUS
+// Tries native camera focus via applyConstraints (Chrome/Android support
+// varies, iOS Safari does not support this at all). Always shows the
+// visual focus ring regardless, so the UX feels consistent everywhere.
+// =========================
+
+photoArea.addEventListener("click", e => {
+  // Only meaningful while the live camera is showing
+  if (!stream || video.style.display === "none") return
+
+  const rect = photoArea.getBoundingClientRect()
+  const x = e.clientX - rect.left
+  const y = e.clientY - rect.top
+
+  // Show visual ring at tap position
+  focusRing.style.left = `${x}px`
+  focusRing.style.top  = `${y}px`
+  focusRing.classList.remove("active")
+  // restart animation
+  void focusRing.offsetWidth
+  focusRing.classList.add("active")
+
+  // Try real focus point via constraints, if supported
+  const track = stream.getVideoTracks()[0]
+  if (!track) return
+
+  const capabilities = track.getCapabilities ? track.getCapabilities() : {}
+
+  if (capabilities.focusMode && capabilities.focusMode.includes("manual") && capabilities.pointsOfInterest) {
+    // Normalize tap coords to 0–1 range, accounting for mirror
+    let nx = x / rect.width
+    const ny = y / rect.height
+    if (cameraMode.value === "user") nx = 1 - nx
+
+    track.applyConstraints({
+      advanced: [{
+        pointsOfInterest: [{ x: nx, y: ny }],
+        focusMode: "manual"
+      }]
+    }).catch(() => {
+      // Some devices report the capability but reject the constraint —
+      // fail silently, the visual ring already gave feedback.
+    })
+  } else if (capabilities.focusMode && capabilities.focusMode.includes("continuous")) {
+    // Nudge continuous autofocus to re-evaluate
+    track.applyConstraints({
+      advanced: [{ focusMode: "continuous" }]
+    }).catch(() => {})
+  }
+})
+
+// =========================
 // CAPTURE
 // =========================
 
@@ -185,9 +239,7 @@ downloadBtn.addEventListener("click", () => {
   const drawX = PHOTO_X + (PHOTO_WIDTH  - drawW) / 2
   const drawY = PHOTO_Y + (PHOTO_HEIGHT - drawH) / 2
 
-  ctx.filter = "contrast(1.06) saturate(1.08) brightness(1.02)"
   ctx.drawImage(img, drawX, drawY, drawW, drawH)
-  ctx.filter = "none"
   ctx.restore()
 
   // 2. Frame overlay on top

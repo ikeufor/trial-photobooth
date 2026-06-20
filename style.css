@@ -1,5 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500&display=swap');
 
+/* =========================
+   COLOR PALETTE (from moodboard)
+   --forest:  deep green     (primary / headings)
+   --maroon:  dark red-brown (secondary accent)
+   --mauve:   dusty brown    (muted text)
+   --dustblue: pale blue     (subtle backgrounds)
+   --rose:    magenta/rose   (capture button accent)
+   --mustard: warm orange    (small highlight, used sparingly)
+========================= */
+
+:root {
+  --forest:   #1f3a26;
+  --maroon:   #5c2024;
+  --mauve:    #6b5350;
+  --dustblue: #aec6e8;
+  --rose:     #c23a5e;
+  --mustard:  #e0974a;
+
+  --cream-1: #f3eee5;
+  --cream-2: #ece3d4;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -7,18 +29,18 @@
 }
 
 body {
-  background: linear-gradient(to bottom, #efe7dc, #e7ddd1);
+  background: linear-gradient(to bottom, var(--cream-1), var(--cream-2));
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 20px 60px;
+  padding: 20px 16px 40px;
   font-family: 'Inter', sans-serif;
 }
 
 .app {
   width: 100%;
-  max-width: 390px;
+  max-width: 360px;
 }
 
 /* =========================
@@ -27,46 +49,47 @@ body {
 
 .hero {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+}
+
+.ornament {
+  color: var(--rose);
+  font-size: 14px;
+  margin-bottom: 2px;
+  opacity: 0.85;
 }
 
 .hero h1 {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 44px;
+  font-size: 36px;
   font-weight: 500;
-  color: #5c4037;
+  color: var(--forest);
   line-height: 1.1;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .hero p {
-  font-size: 11px;
-  letter-spacing: 3.5px;
+  font-size: 10px;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(70, 50, 50, 0.55);
+  color: var(--mauve);
 }
 
 /* =========================
    PREVIEW CONTAINER
-   Keeps the aspect ratio of the full frame PNG (757×1177)
 ========================= */
 
 .preview-container {
   position: relative;
   width: 100%;
-  /* aspect ratio matches frame.png exactly */
+  max-width: 280px;
+  margin: 0 auto 14px;
   aspect-ratio: 757 / 1177;
-  margin-bottom: 20px;
 }
 
 /* =========================
    PHOTO AREA
-   Positioned to match where the photo sits inside frame.png.
-   Adjust these % values if your frame.png has different padding:
-     top:    102/1177  ≈ 8.67%
-     left:   16/757    ≈ 2.11%
-     width:  725/757   ≈ 95.77%
-     height: 873/1177  ≈ 74.13%
+   top: 8.67% | left: 2.11% | width: 95.77% | height: 74.13%
 ========================= */
 
 .photo-area {
@@ -76,11 +99,9 @@ body {
   width: 95.77%;
   height: 74.13%;
   overflow: hidden;
-  background: #1a1a1a;
-  /* no border-radius unless your frame has rounded corners */
+  background: var(--forest);
 }
 
-/* Video fills photo-area completely */
 #video {
   position: absolute;
   inset: 0;
@@ -88,9 +109,10 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  /* slightly crisper live preview than before */
+  filter: contrast(1.04) saturate(1.05);
 }
 
-/* Preview img: replaces canvas in the DOM — fills area perfectly via object-fit */
 #preview {
   position: absolute;
   inset: 0;
@@ -100,7 +122,6 @@ body {
   display: none;
 }
 
-/* Placeholder shown when nothing is active */
 .placeholder {
   position: absolute;
   inset: 0;
@@ -108,14 +129,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 12px;
-  letter-spacing: 1px;
+  gap: 8px;
+  color: rgba(174, 198, 232, 0.45);
+  font-size: 11px;
+  letter-spacing: 0.5px;
   pointer-events: none;
 }
 
-/* Frame PNG overlays everything */
 .frame-overlay {
   position: absolute;
   inset: 0;
@@ -125,12 +145,48 @@ body {
   z-index: 10;
 }
 
-/* =========================
-   MIRROR
-========================= */
-
 .mirror {
   transform: scaleX(-1);
+}
+
+/* =========================
+   HOW TO USE
+========================= */
+
+.howto {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+}
+
+.howto-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--mauve);
+  line-height: 1.25;
+}
+
+.step-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--forest);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 /* =========================
@@ -140,26 +196,24 @@ body {
 .controls {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-/* Hide the real file input */
 #upload {
   display: none;
 }
 
-/* Shared button base */
 .btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
   width: 100%;
   border: none;
-  border-radius: 14px;
-  padding: 14px 18px;
+  border-radius: 13px;
+  padding: 12px 16px;
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
@@ -181,68 +235,65 @@ body {
   cursor: not-allowed;
 }
 
-/* Ghost: for upload label & camera select row */
 .btn-ghost {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  color: #4a3833;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  color: var(--forest);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
 }
 
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
 }
 
-/* Primary: capture */
+/* Primary: capture — uses rose accent from palette */
 .btn-primary {
-  background: #5c4037;
+  background: var(--rose);
   color: #fff;
-  box-shadow: 0 6px 20px rgba(92, 64, 55, 0.28);
-  font-size: 15px;
-  padding: 16px 18px;
+  box-shadow: 0 6px 18px rgba(194, 58, 94, 0.32);
+  font-size: 14px;
+  padding: 13px 16px;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #6e4c41;
+  background: #ab3554;
 }
 
 /* Secondary: download */
 .btn-secondary {
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(12px);
-  color: #5c4037;
-  border: 1.5px solid rgba(92, 64, 55, 0.22);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  color: var(--forest);
+  border: 1.5px solid rgba(31, 58, 38, 0.22);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.85);
 }
 
 /* =========================
    CAMERA GROUP
-   Select + Open button side by side
 ========================= */
 
 .camera-group {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .select-inline {
   flex: 1;
-  /* override default select arrow look */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234a3833' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%231f3a26' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 14px center;
-  padding-right: 36px;
+  background-position: right 12px center;
+  padding-right: 32px;
   text-align: left;
 }
 
 .icon-btn {
   flex: 0 0 auto;
   width: auto;
-  padding: 14px 18px;
+  padding: 12px 16px;
   white-space: nowrap;
 }
 
@@ -252,9 +303,40 @@ body {
 
 .footer {
   text-align: center;
-  margin-top: 20px;
-  font-size: 11px;
-  letter-spacing: 2.5px;
+  margin-top: 14px;
+  font-size: 10px;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  color: rgba(60, 40, 40, 0.4);
+  color: var(--mauve);
+  opacity: 0.7;
+}
+
+/* =========================
+   RESPONSIVE: keep everything visible on short mobile screens
+========================= */
+
+@media (max-height: 700px) {
+  body {
+    padding: 12px 16px 24px;
+    align-items: flex-start;
+  }
+  .hero {
+    margin-bottom: 8px;
+  }
+  .hero h1 {
+    font-size: 30px;
+  }
+  .preview-container {
+    max-width: 220px;
+    margin-bottom: 10px;
+  }
+  .howto {
+    display: none; /* hide instructions on very short screens to prioritize controls */
+  }
+  .controls {
+    gap: 6px;
+  }
+  .btn {
+    padding: 10px 14px;
+  }
 }

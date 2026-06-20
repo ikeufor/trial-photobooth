@@ -10,19 +10,18 @@
   <div class="app">
 
     <div class="hero">
+      <div class="ornament">&#10022;</div>
       <h1>Nama &amp; Nama</h1>
       <p>Wedding Photobooth</p>
     </div>
 
     <!-- FRAME PREVIEW -->
     <div class="preview-container">
-      <!-- video & canvas sit inside .photo-area, not the full frame -->
       <div class="photo-area">
         <video id="video" autoplay playsinline muted></video>
-        <!-- preview img: shows captured/uploaded photo, never the raw canvas -->
         <img id="preview" alt="" />
         <div class="placeholder" id="placeholder">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
             <circle cx="12" cy="13" r="4"/>
           </svg>
@@ -30,6 +29,22 @@
         </div>
       </div>
       <img src="frame.png" class="frame-overlay" alt="" />
+    </div>
+
+    <!-- HOW TO USE -->
+    <div class="howto">
+      <div class="howto-step">
+        <span class="step-num">1</span>
+        <span>Upload foto atau buka kamera</span>
+      </div>
+      <div class="howto-step">
+        <span class="step-num">2</span>
+        <span>Tekan capture untuk ambil foto</span>
+      </div>
+      <div class="howto-step">
+        <span class="step-num">3</span>
+        <span>Simpan &amp; bagikan momennya</span>
+      </div>
     </div>
 
     <!-- CONTROLS -->

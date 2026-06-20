@@ -185,7 +185,7 @@ downloadBtn.addEventListener("click", () => {
   const drawX = PHOTO_X + (PHOTO_WIDTH  - drawW) / 2
   const drawY = PHOTO_Y + (PHOTO_HEIGHT - drawH) / 2
 
-  ctx.filter = "brightness(1.03) contrast(0.92) saturate(0.88) sepia(0.08)"
+  ctx.filter = "contrast(1.06) saturate(1.08) brightness(1.02)"
   ctx.drawImage(img, drawX, drawY, drawW, drawH)
   ctx.filter = "none"
   ctx.restore()

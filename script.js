@@ -12,18 +12,25 @@ const focusRing      = document.getElementById("focusRing")
 // =========================
 // OFF-SCREEN CANVAS
 // Never inserted into DOM — only used for compositing the download.
+// Exported at EXPORT_SCALE× the base frame size for a crisp, HD result.
 // =========================
 
-const canvas = document.createElement("canvas")
-canvas.width  = 757
-canvas.height = 1177
-const ctx = canvas.getContext("2d")
+const BASE_WIDTH   = 757
+const BASE_HEIGHT  = 1177
+const EXPORT_SCALE = 3   // bump to 4 for even higher res, but file size grows fast
 
-// Photo area coordinates inside the 757×1177 canvas
-const PHOTO_X      = 16
-const PHOTO_Y      = 102
-const PHOTO_WIDTH  = 725
-const PHOTO_HEIGHT = 873
+const canvas = document.createElement("canvas")
+canvas.width  = BASE_WIDTH  * EXPORT_SCALE
+canvas.height = BASE_HEIGHT * EXPORT_SCALE
+const ctx = canvas.getContext("2d")
+ctx.imageSmoothingEnabled = true
+ctx.imageSmoothingQuality = "high"
+
+// Photo area coordinates, scaled to match the export canvas
+const PHOTO_X      = 16   * EXPORT_SCALE
+const PHOTO_Y      = 102  * EXPORT_SCALE
+const PHOTO_WIDTH  = 725  * EXPORT_SCALE
+const PHOTO_HEIGHT = 873  * EXPORT_SCALE
 
 // =========================
 // FRAME
@@ -80,7 +87,14 @@ async function startCamera() {
     const facing = cameraMode.value
 
     stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: facing } },
+      video: {
+        facingMode: { ideal: facing },
+        // Ask for the highest resolution the device can offer.
+        // Browsers cap this to the camera's actual max, so it's safe
+        // to ask high — it won't error out on lower-end devices.
+        width:  { ideal: 1920 },
+        height: { ideal: 1920 }
+      },
       audio: false
     })
 
@@ -247,7 +261,7 @@ downloadBtn.addEventListener("click", () => {
 
   // 3. Trigger download
   const link    = document.createElement("a")
-  link.download = "A-Postcard-From-Yahya-Yulia.png";
+  link.download = "nama-nama-photobooth.png"
   link.href     = canvas.toDataURL("image/png")
   link.click()
 })

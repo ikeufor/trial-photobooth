@@ -247,7 +247,7 @@ downloadBtn.addEventListener("click", () => {
 
   // 3. Trigger download
   const link    = document.createElement("a")
-  link.download = "nama-nama-photobooth.png"
+  link.download = "A-Postcard-From-Yahya-Yulia.png";
   link.href     = canvas.toDataURL("image/png")
   link.click()
 })

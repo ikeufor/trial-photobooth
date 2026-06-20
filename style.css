@@ -100,6 +100,40 @@ body {
   height: 74.13%;
   overflow: hidden;
   background: var(--forest);
+  cursor: pointer;
+}
+
+/* Tap-to-focus ring, mimics native camera UI */
+.focus-ring {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  border: 1.5px solid #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1.3);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 5;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.focus-ring.active {
+  animation: focusPulse 0.55s ease-out;
+}
+
+@keyframes focusPulse {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 #video {
@@ -109,8 +143,6 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
-  /* slightly crisper live preview than before */
-  filter: contrast(1.04) saturate(1.05);
 }
 
 #preview {

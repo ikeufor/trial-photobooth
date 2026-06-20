@@ -362,9 +362,6 @@ body {
     max-width: 220px;
     margin-bottom: 10px;
   }
-  .howto {
-    display: none; /* hide instructions on very short screens to prioritize controls */
-  }
   .controls {
     gap: 6px;
   }

@@ -260,9 +260,12 @@ downloadBtn.addEventListener("click", () => {
   ctx.drawImage(frame, 0, 0, canvas.width, canvas.height)
 
   // 3. Trigger download
-  const link    = document.createElement("a")
-  link.download = "A-Postcard-From-Yahya-Yulia.png"
-  link.href     = canvas.toDataURL("image/png")
+  const link = document.createElement("a")
+    
+  const quality = 0.94 // bisa 0.8–0.92 (semakin kecil = semakin ringan)
+  link.download = "A-Postcard-From-Yahya-Yulia.jpg"
+  link.href = canvas.toDataURL("image/jpeg", quality)
+    
   link.click()
 })
 

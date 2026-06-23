@@ -17,7 +17,7 @@ const focusRing      = document.getElementById("focusRing")
 
 const BASE_WIDTH   = 757
 const BASE_HEIGHT  = 1177
-const EXPORT_SCALE = 3   // bump to 4 for even higher res, but file size grows fast
+const EXPORT_SCALE = 2 // bump to 4 for even higher res, but file size grows fast
 
 const canvas = document.createElement("canvas")
 canvas.width  = BASE_WIDTH  * EXPORT_SCALE
